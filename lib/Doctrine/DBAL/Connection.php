@@ -932,6 +932,31 @@ class Connection implements DriverConnection
     }
 
     /**
+     * Prepares and executes an SQL query and returns the result as an associative array
+     * made by an array of column names and another of only values
+     *
+     * @param string         $sql    The SQL query.
+     * @param mixed[]        $params The query parameters.
+     * @param int[]|string[] $types  The query parameter types.
+     *
+     * @return mixed[]
+     */
+    public function fetchAllByColVals($sql, array $params = [], $types = [])
+    {
+        $allResults = $this->executeQuery($sql, $params, $types)->fetchAll();
+        $onlyResults = [];
+
+        foreach ($allResults as $singleResult) {
+          array_push($onlyResults, array_values($singleResult));
+        }
+
+        return [
+          'columns' => array_keys($allResults[0]),
+          'values' => $onlyResults
+        ];
+    }
+
+    /**
      * Prepares and executes an SQL query and returns the result as an array of numeric arrays.
      *
      * @param string                                           $query  The SQL query.
